@@ -11,21 +11,17 @@ class BlockHeader{
 public:
 	// think about what else should be included as member variables
 	int block_size;  // size of the block
+	char buddy_Loc;  //Has potential value of 0(left buddy) or 1(right buddy), this helps with determining offset
 	BlockHeader* next; // pointer to the next block
 };
 
+// this is a special linked list that is made out of BlockHeader's.
 class LinkedList{
-	// this is a special linked list that is made out of BlockHeader s. 
 public:
 	BlockHeader* head;		// you need a head of the list
 public:
-	void insert (BlockHeader* b){	// adds a block to the list
-
-	}
-
-	void remove (BlockHeader* b){  // removes a block from the list
-
-	}
+	void insert(BlockHeader* b);	// adds a block to the list
+	void remove(BlockHeader* b);   // removes a block from the list
 };
 
 
@@ -40,24 +36,24 @@ private:
 	/* private function you are required to implement
 	 this will allow you and us to do unit test */
 	
-	BlockHeader* getbuddy (BlockHeader * addr); 
+	BlockHeader* getbuddy(BlockHeader * addr); 
 	// given a block address, this function returns the address of its buddy 
 	
-	bool arebuddies (BlockHeader* block1, BlockHeader* block2);
+	bool arebuddies(BlockHeader* block1, BlockHeader* block2);
 	// checks whether the two blocks are buddies are not
 	// note that two adjacent blocks are not buddies when they are different sizes
 
-	BlockHeader* merge (BlockHeader* block1, BlockHeader* block2);
+	BlockHeader* merge(BlockHeader* block1, BlockHeader* block2);
 	// this function merges the two blocks returns the beginning address of the merged block
 	// note that either block1 can be to the left of block2, or the other way around
 
-	BlockHeader* split (BlockHeader* block);
+	BlockHeader* split(BlockHeader* block);
 	// splits the given block by putting a new header halfway through the block
 	// also, the original header needs to be corrected
 
 
 public:
-	BuddyAllocator (int _basic_block_size, int _total_memory_length); 
+	BuddyAllocator(int _basic_block_size, int _total_memory_length); 
 	/* This initializes the memory allocator and makes a portion of 
 	   ’_total_memory_length’ bytes available. The allocator uses a ’_basic_block_size’ as 
 	   its minimal unit of allocation. The function returns the amount of 
@@ -77,7 +73,7 @@ public:
 	/* Frees the section of physical memory previously allocated 
 	   using alloc(). */ 
    
-	void printlist ();
+	void printlist();
 	/* Mainly used for debugging purposes and running short test cases */
 	/* This function prints how many free blocks of each size belong to the allocator
 	at that point. It also prints the total amount of free memory available just by summing

@@ -1,5 +1,8 @@
 #include "Ackerman.h"
 #include "BuddyAllocator.h"
+#include "unistd.h"
+
+using namespace std;
 
 void easytest(BuddyAllocator* ba){
   // be creative here
@@ -20,6 +23,37 @@ void easytest(BuddyAllocator* ba){
 int main(int argc, char ** argv) {
 
   int basic_block_size = 128, memory_length = 512 * 1024;
+  int option;
+  opterr = 0;
+
+
+  //getopt usage to set basic_block_size, and memory_length
+  while( (option = getopt(argc, argv, "b:s:")) != -1 ){
+    switch(option){
+      case 'b':
+        cout << "Added b as an option" << endl;
+        cout << "The argument passed was: " << optarg << endl;
+        break;
+      case 's':
+        cout << "added s as an argument" << endl;
+        cout << "The argument passed was: " << optarg << endl;
+        break;
+      case '?':
+          if( optopt == 'b' ){
+            cout << "Error! no basic block size entered after -b option flag!" << endl;
+          } else if( optopt == 's' ){
+            cout << "Error! no memory size was entered after -s option flag!" << endl;
+          } else if( isprint(optopt) ){
+            cout << " Unknown option: " << (char)optopt << endl; 
+          } else {
+            cout << "Unknown option character: " << (char)optopt << endl;
+          }
+          return 0;
+      default:
+        return 0;
+    }
+  }
+
 
   // create memory manager
   BuddyAllocator * allocator = new BuddyAllocator(basic_block_size, memory_length);
@@ -29,8 +63,8 @@ int main(int argc, char ** argv) {
 
   
   // stress-test the memory manager, do this only after you are done with small test cases
-  Ackerman* am = new Ackerman ();
-  am->test(allocator); // this is the full-fledged test. 
+  // Ackerman* am = new Ackerman ();
+  // am->test(allocator); // this is the full-fledged test. 
   
   // destroy memory manager
   delete allocator;

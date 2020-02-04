@@ -2,6 +2,26 @@
 #include <iostream>
 using namespace std;
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//LINKEDLIST IMPLEMENTATION
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//LinkedList public functions
+void LinkedList::insert(BlockHeader* b){
+
+};
+
+void LinkedList::remove(BlockHeader* b){
+  
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//BUDDYALLOCATOR IMPLEMENTATION
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//BuddyAllocator Constructor and Destuctor
 BuddyAllocator::BuddyAllocator (int _basic_block_size, int _total_memory_length){
   basic_block_size = _basic_block_size, total_memory_size = _total_memory_length;
 }
@@ -10,6 +30,28 @@ BuddyAllocator::~BuddyAllocator (){
 	
 }
 
+//BuddyAllocator private functions
+BlockHeader* BuddyAllocator::getbuddy(BlockHeader * addr){
+
+  return NULL;
+}
+
+bool BuddyAllocator::arebuddies(BlockHeader* block1, BlockHeader* block2){
+
+  return true;
+}
+
+BlockHeader* BuddyAllocator::merge(BlockHeader* block1, BlockHeader* block2){
+
+  return NULL;
+}
+
+BlockHeader* BuddyAllocator::split(BlockHeader* block){
+
+  return NULL;
+}
+
+//BuddyAllocator public functions
 void* BuddyAllocator::alloc(int length) {
   /* This preliminary implementation simply hands the call over the 
      the C standard library! 
