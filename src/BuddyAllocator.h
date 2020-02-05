@@ -37,21 +37,25 @@ private:
 	/* private function you are required to implement
 	 this will allow you and us to do unit test */
 	
-	BlockHeader* getbuddy(BlockHeader * addr); 
 	// given a block address, this function returns the address of its buddy 
+	BlockHeader* getbuddy(BlockHeader * addr); 
 	
-	bool arebuddies(BlockHeader* block1, BlockHeader* block2);
 	// checks whether the two blocks are buddies are not
 	// note that two adjacent blocks are not buddies when they are different sizes
-
-	BlockHeader* merge(BlockHeader* block1, BlockHeader* block2);
+	bool arebuddies(BlockHeader* block1, BlockHeader* block2);
+	
 	// this function merges the two blocks returns the beginning address of the merged block
 	// note that either block1 can be to the left of block2, or the other way around
-
-	BlockHeader* split(BlockHeader* block);
+	BlockHeader* merge(BlockHeader* block1, BlockHeader* block2);
+	
 	// splits the given block by putting a new header halfway through the block
 	// also, the original header needs to be corrected
+	BlockHeader* split(BlockHeader* block);
 
+	//this function is used to setup the LinkedLists that will hold the different free blocks
+	//the 0 index of the FreeList contains the basic_block_size, the last index of FreeList will
+	//contain the the largest possible block size.
+	void setupFreeList();
 
 public:
 	BuddyAllocator(int _basic_block_size, int _total_memory_length); 

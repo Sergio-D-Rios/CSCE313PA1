@@ -20,6 +20,10 @@ void easytest(BuddyAllocator* ba){
 
 }
 
+int setBasicBlockSize(int min_block_size){
+
+};
+
 int main(int argc, char ** argv) {
 
   int basic_block_size = 128, memory_length = 512 * 1024;

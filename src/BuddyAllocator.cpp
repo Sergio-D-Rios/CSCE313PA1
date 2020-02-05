@@ -61,6 +61,7 @@ BuddyAllocator::BuddyAllocator (int _basic_block_size, int _total_memory_length)
   BlockHeader * startBlock_ptr = &startBlock;
   memcpy( start_loc, startBlock_ptr, sizeof(startBlock) );
   startBlock_ptr = (BlockHeader*)start_loc;
+  
   //FIXME: Need to create Freelist then add the starting block to the correct index in freelist
 
 
