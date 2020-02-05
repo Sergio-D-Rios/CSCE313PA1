@@ -1,5 +1,7 @@
 #include "BuddyAllocator.h"
 #include <iostream>
+#include <cstring>
+#include <cstdlib>
 using namespace std;
 
 
@@ -9,12 +11,40 @@ using namespace std;
 
 //LinkedList public functions
 void LinkedList::insert(BlockHeader* b){
-
+  cout << "Current Head is " << this->head << endl;
+  if(this->head == NULL){
+    this->head = b;
+    b->next = NULL;
+  } else {
+    b->next = this->head;
+    this->head = b;
+  }
 };
 
 void LinkedList::remove(BlockHeader* b){
-  
-}
+  BlockHeader* temp = this->head;
+  if(b == NULL){
+    cout << "Removal not possible" << endl;
+  } else if(b == this->head){
+    if(this->head->next == NULL){
+      this->head = NULL;
+      temp->next = NULL;
+      cout << "Removing the head, list is now empty." << endl;
+    } else {
+      this->head = this->head->next;
+      temp->next = NULL;
+      cout << "Removing the head, new head designated for non-empty list." << endl;
+    }
+  } else {
+    BlockHeader* temp = this->head;
+    while(temp->next != b ){
+      temp = temp->next;
+    }
+    temp->next = b->next;
+    b->next = NULL;
+    cout << "Removing an interior element for non-empty list." << endl;
+  }
+};
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,32 +54,43 @@ void LinkedList::remove(BlockHeader* b){
 //BuddyAllocator Constructor and Destuctor
 BuddyAllocator::BuddyAllocator (int _basic_block_size, int _total_memory_length){
   basic_block_size = _basic_block_size, total_memory_size = _total_memory_length;
-}
+  start_loc = (char*)malloc(total_memory_size);
+  BlockHeader startBlock;
+  startBlock.block_size = total_memory_size;
+  startBlock.buddy_Loc = 0;
+  BlockHeader * startBlock_ptr = &startBlock;
+  memcpy( start_loc, startBlock_ptr, sizeof(startBlock) );
+  startBlock_ptr = (BlockHeader*)start_loc;
+  //FIXME: Need to create Freelist then add the starting block to the correct index in freelist
+
+
+};
 
 BuddyAllocator::~BuddyAllocator (){
-	
+  cout << "Called Destructor" << endl;
+	free(start_loc);
 }
 
 //BuddyAllocator private functions
 BlockHeader* BuddyAllocator::getbuddy(BlockHeader * addr){
 
   return NULL;
-}
+};
 
 bool BuddyAllocator::arebuddies(BlockHeader* block1, BlockHeader* block2){
 
   return true;
-}
+};
 
 BlockHeader* BuddyAllocator::merge(BlockHeader* block1, BlockHeader* block2){
 
   return NULL;
-}
+};
 
 BlockHeader* BuddyAllocator::split(BlockHeader* block){
 
   return NULL;
-}
+};
 
 //BuddyAllocator public functions
 void* BuddyAllocator::alloc(int length) {
@@ -58,12 +99,12 @@ void* BuddyAllocator::alloc(int length) {
      Of course this needs to be replaced by your implementation.
   */
   return malloc (length);
-}
+};
 
 void BuddyAllocator::free(void* a) {
   /* Same here! */
   ::free (a);
-}
+};
 
 void BuddyAllocator::printlist (){
   cout << "Printing the Freelist in the format \"[index] (block size) : # of blocks\"" << endl;
@@ -88,5 +129,5 @@ void BuddyAllocator::printlist (){
     cout << count << endl;
     cout << "Amount of available free memory: " << total_free_memory << " byes" << endl;  
   }
-}
+};
 

@@ -1,0 +1,35 @@
+//Testing the Linked list for correctness
+  // BlockHeader* a = new BlockHeader();
+  // a->block_size = 0;
+  // BlockHeader* b = new BlockHeader();
+  // b->block_size = 1;
+  // BlockHeader* c = new BlockHeader();
+  // c->block_size = 2;
+
+  // LinkedList Tester;
+
+  // Tester.insert(a);
+  // Tester.insert(b);
+  // Tester.insert(c);
+
+  // cout << "a points to this address: " << a << endl;
+  // cout << "b points to this address: " << b << endl;
+  // cout << "c points to this address: " << c << endl;
+
+  // cout << "a->next = " << a->next << endl;
+  // cout << "b->next = " << b->next << endl;
+  // cout << "c->next = " << c->next << endl;
+
+  // cout << "Tester head " << Tester.head << endl;
+
+  // Tester.remove(b);
+
+  // cout << "a->next = " << a->next << endl;
+  // cout << "b->next = " << b->next << endl;
+  // cout << "c->next = " << c->next << endl;
+
+  // Tester.remove(c);
+
+  // cout << "a->next = " << a->next << endl;
+  // cout << "b->next = " << b->next << endl;
+  // cout << "c->next = " << c->next << endl;

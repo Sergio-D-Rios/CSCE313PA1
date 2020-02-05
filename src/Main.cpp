@@ -33,10 +33,14 @@ int main(int argc, char ** argv) {
       case 'b':
         cout << "Added b as an option" << endl;
         cout << "The argument passed was: " << optarg << endl;
+        basic_block_size = atoi(optarg);
+        cout << "The basic block size has been set to: " << basic_block_size << " Bytes" << endl; 
         break;
       case 's':
         cout << "added s as an argument" << endl;
         cout << "The argument passed was: " << optarg << endl;
+        memory_length = atoi(optarg) * 1024;
+        cout << "The memory length has been set to " << memory_length << " KiloBytes" << endl;
         break;
       case '?':
           if( optopt == 'b' ){
@@ -54,12 +58,12 @@ int main(int argc, char ** argv) {
     }
   }
 
-
   // create memory manager
   BuddyAllocator * allocator = new BuddyAllocator(basic_block_size, memory_length);
+  delete(allocator);
 
   // the following won't print anything until you start using FreeList and replace the "new" with your own implementation
-  easytest (allocator);
+  // easytest (allocator);
 
   
   // stress-test the memory manager, do this only after you are done with small test cases
@@ -67,5 +71,7 @@ int main(int argc, char ** argv) {
   // am->test(allocator); // this is the full-fledged test. 
   
   // destroy memory manager
-  delete allocator;
+  // delete allocator;
 }
+
+

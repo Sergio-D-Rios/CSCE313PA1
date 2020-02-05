@@ -12,13 +12,13 @@ public:
 	// think about what else should be included as member variables
 	int block_size;  // size of the block
 	char buddy_Loc;  //Has potential value of 0(left buddy) or 1(right buddy), this helps with determining offset
-	BlockHeader* next; // pointer to the next block
+	BlockHeader* next = NULL; // pointer to the next block
 };
 
 // this is a special linked list that is made out of BlockHeader's.
 class LinkedList{
 public:
-	BlockHeader* head;		// you need a head of the list
+	BlockHeader* head = NULL;		// you need a head of the list
 public:
 	void insert(BlockHeader* b);	// adds a block to the list
 	void remove(BlockHeader* b);   // removes a block from the list
@@ -31,6 +31,7 @@ private:
 	vector<LinkedList> FreeList;
 	int basic_block_size;
 	int total_memory_size;
+	char * start_loc = NULL;
 
 private:
 	/* private function you are required to implement
