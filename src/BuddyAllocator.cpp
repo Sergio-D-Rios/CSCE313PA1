@@ -56,6 +56,8 @@ void LinkedList::remove(BlockHeader* b){
 BuddyAllocator::BuddyAllocator (int _basic_block_size, int _total_memory_length){
   basic_block_size = _basic_block_size, total_memory_size = _total_memory_length;
 
+  cout << endl << endl << endl << "/////////////////////Start of Constructor////////////////////" << endl;
+
   //Setting up basic_block_size to be a power of 2
   if(log2(basic_block_size) > (int)log2(basic_block_size)){
     cout << "Given basic_block_size was not a power of 2: " << basic_block_size << endl;
@@ -87,6 +89,8 @@ BuddyAllocator::BuddyAllocator (int _basic_block_size, int _total_memory_length)
   cout << "Succesfully placed startBlock in FreeList -> total_memory_size: " << FreeList.at(FreeList.size()-1).head->block_size << endl;
 
   printlist();
+
+  cout << "/////////////////////End of Constructor////////////////////" << endl;
   
   //FIXME: Need to create Freelist then add the starting block to the correct index in freelist
 
