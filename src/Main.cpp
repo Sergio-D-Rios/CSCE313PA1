@@ -44,7 +44,7 @@ int main(int argc, char ** argv) {
         cout << "added s as an argument" << endl;
         cout << "The argument passed was: " << optarg << endl;
         memory_length = atoi(optarg) * 1024;
-        cout << "The memory length has been set to " << memory_length << " KiloBytes" << endl;
+        cout << "The memory length has been set to " << memory_length << " Bytes" << endl;
         break;
       case '?':
           if( optopt == 'b' ){

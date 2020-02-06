@@ -55,7 +55,7 @@ private:
 	//this function is used to setup the LinkedLists that will hold the different free blocks
 	//the 0 index of the FreeList contains the basic_block_size, the last index of FreeList will
 	//contain the the largest possible block size.
-	void setupFreeList();
+	void setupFreeList(int levelsNeeded);
 
 public:
 	BuddyAllocator(int _basic_block_size, int _total_memory_length); 

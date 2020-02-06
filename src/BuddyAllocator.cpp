@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
+#include <cmath>
 using namespace std;
 
 
@@ -54,15 +55,41 @@ void LinkedList::remove(BlockHeader* b){
 //BuddyAllocator Constructor and Destuctor
 BuddyAllocator::BuddyAllocator (int _basic_block_size, int _total_memory_length){
   basic_block_size = _basic_block_size, total_memory_size = _total_memory_length;
+
+  //Setting up basic_block_size to be a power of 2
+  if(log2(basic_block_size) > (int)log2(basic_block_size)){
+    cout << "Given basic_block_size was not a power of 2: " << basic_block_size << endl;
+    basic_block_size = (int)pow(2,(int)(log2(basic_block_size) + 1));
+    cout << "Will instead allocate nearest power: " << basic_block_size << endl;
+  }
+
+  //Setting up total memory size to be a power of 2
+  if(log2(total_memory_size) > (int)log2(total_memory_size)){
+    cout << "Given total_memory_size was not a power of 2: " << total_memory_size << endl;
+    total_memory_size = (int)pow(2,(int)(log2(total_memory_size) + 1));
+    cout << "Will instead allocate nearest power: " << total_memory_size << endl;
+  }
+
+  cout << "Levels needed " << log2(total_memory_size/basic_block_size) + 1 << endl;
+
+  //setup freelist with 
+  setupFreeList((int)log2(total_memory_size/basic_block_size) + 1);
+ 
   start_loc = (char*)malloc(total_memory_size);
   BlockHeader startBlock;
   startBlock.block_size = total_memory_size;
   startBlock.buddy_Loc = 0;
-  BlockHeader * startBlock_ptr = &startBlock;
-  memcpy( start_loc, startBlock_ptr, sizeof(startBlock) );
-  startBlock_ptr = (BlockHeader*)start_loc;
+  memcpy( start_loc, &startBlock, sizeof(startBlock) );
+  BlockHeader * startBlock_ptr = (BlockHeader*)start_loc;
+  cout << "Size of Block Header " << sizeof(startBlock) << endl;
+  FreeList.at(FreeList.size()-1).head = startBlock_ptr;
+
+  cout << "Succesfully placed startBlock in FreeList -> total_memory_size: " << FreeList.at(FreeList.size()-1).head->block_size << endl;
+
+  printlist();
   
   //FIXME: Need to create Freelist then add the starting block to the correct index in freelist
+
 
 
 };
@@ -91,6 +118,16 @@ BlockHeader* BuddyAllocator::merge(BlockHeader* block1, BlockHeader* block2){
 BlockHeader* BuddyAllocator::split(BlockHeader* block){
 
   return NULL;
+};
+
+void BuddyAllocator::setupFreeList(int levelsNeeded){
+
+  for(int i =0; i < levelsNeeded; i++){
+    FreeList.push_back(LinkedList());
+  }
+
+  cout << "Current FreeList size " << FreeList.size() << endl;
+
 };
 
 //BuddyAllocator public functions
