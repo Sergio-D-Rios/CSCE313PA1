@@ -30,7 +30,9 @@ private:
 	/* declare more member variables as necessary */
 	vector<LinkedList> FreeList;
 	int basic_block_size;
+	int basic_block_base2;
 	int total_memory_size;
+	short max_level_index;
 	char * start_loc = NULL;
 
 private:
@@ -49,7 +51,8 @@ private:
 	BlockHeader* merge(BlockHeader* block1, BlockHeader* block2);
 	
 	// splits the given block by putting a new header halfway through the block
-	// also, the original header needs to be corrected
+	// also, the original header needs to be corrected. Returns a pointer to the left buddy
+	//as well as adds both split buddies to the appropriate freelist.
 	BlockHeader* split(BlockHeader* block);
 
 	//this function is used to setup the LinkedLists that will hold the different free blocks
