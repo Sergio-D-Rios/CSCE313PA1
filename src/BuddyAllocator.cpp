@@ -103,12 +103,29 @@ BuddyAllocator::~BuddyAllocator (){
 //BuddyAllocator private functions
 BlockHeader* BuddyAllocator::getbuddy(BlockHeader * addr){
 
-  return NULL;
+  //FIXME: NEED TO TEST GETBUDDY
+
+  if(addr->buddy_Loc == 0){
+    BlockHeader * buddyAddr = (BlockHeader*)( ((char*)addr) + addr->block_size );
+    if(arebuddies(addr, buddyAddr)){
+      return buddyAddr;
+    } else {
+      return NULL;
+    }
+  } else {
+    BlockHeader * buddyAddr = (BlockHeader*)( ((char*)addr) - addr->block_size );
+    if(arebuddies(addr, buddyAddr)){
+      return buddyAddr;
+    } else {
+      return NULL;
+    }
+  }
 };
 
 bool BuddyAllocator::arebuddies(BlockHeader* block1, BlockHeader* block2){
 
-  return true;
+  return block1->block_size == block2->block_size;
+      
 };
 
 BlockHeader* BuddyAllocator::merge(BlockHeader* block1, BlockHeader* block2){
