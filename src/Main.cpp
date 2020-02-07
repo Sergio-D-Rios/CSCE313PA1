@@ -1,6 +1,7 @@
 #include "Ackerman.h"
 #include "BuddyAllocator.h"
-#include "unistd.h"
+#include <unistd.h>
+
 
 using namespace std;
 
@@ -64,6 +65,10 @@ int main(int argc, char ** argv) {
 
   // create memory manager
   BuddyAllocator * allocator = new BuddyAllocator(basic_block_size, memory_length);
+  void* testAlloc = allocator->alloc(256);
+
+  cout << "testAlloc address: " << testAlloc << endl;
+
   delete(allocator);
 
   // the following won't print anything until you start using FreeList and replace the "new" with your own implementation

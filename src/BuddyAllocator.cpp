@@ -92,12 +92,6 @@ BuddyAllocator::BuddyAllocator (int _basic_block_size, int _total_memory_length)
 
   // cout << "Succesfully placed startBlock in FreeList -> total_memory_size: " << FreeList.at(FreeList.size()-1).head->block_size << endl;
 
-  printlist();
-
-  split(startBlock_ptr);
-
-  printlist();
-
   cout << "/////////////////////End of Constructor////////////////////" << endl;
 };
 
@@ -175,18 +169,73 @@ void* BuddyAllocator::alloc(int length) {
      Of course this needs to be replaced by your implementation.
   */
 
-  long bytesRequested = length + sizeof(BlockHeader);
-  int indexOfBlockNeeded = ceil(log2(bytesRequested));
+  cout << "///////////////////////Start of Alloc///////////////////////////" << endl;
+
+  printlist();
+
+  //Checking function input
+  if(length < 1){
+    cout << "Cannot allocate less than 1 byte! returned a Null pointer" << endl;
+    return NULL;
+  } else if ( length > total_memory_size ){
+    cout << "Not enough Memory Null Pointer returned instead" << endl;
+  }
+
+  int bytesRequested = length + sizeof(BlockHeader);
+  int indexOfBlockSizeRequested = ceil( log2(bytesRequested) ) - basic_block_base2;
+
+  if( indexOfBlockSizeRequested < 0 ){
+    indexOfBlockSizeRequested = 0;
+  }
+
+  cout << "indexOfBlockSizeRequested: " << indexOfBlockSizeRequested << endl;
+
+  int indexOfNearestFreeBlock = indexOfBlockSizeRequested;
   
-  while( FreeList.at(indexOfBlockNeeded).head != NULL){
-    if(indexOfBlockNeeded == max_level_index){
+  //Goes through Freelist until it finds the next available block that can fit
+  //the requested size. Returns NULL if none available.
+  while( FreeList.at(indexOfNearestFreeBlock).head == NULL ){
+    if(indexOfNearestFreeBlock == max_level_index){
       cout << "Not enough Memory Null pointer returned instead";
+      return NULL;
     } else {
-      indexOfBlockNeeded += 1;
+      indexOfNearestFreeBlock += 1;
     }
   };
-   
-  return malloc (length);
+
+  cout << "IndexOfNearestFreeBlock: " << indexOfNearestFreeBlock << endl;
+
+  while( indexOfNearestFreeBlock != indexOfBlockSizeRequested ){
+    BlockHeader* blockToSplit = FreeList.at(indexOfNearestFreeBlock).head;
+
+    //Need to remove the Block from it's FreeList first
+    FreeList.at(indexOfNearestFreeBlock).remove(blockToSplit);
+
+    split(blockToSplit);
+    indexOfNearestFreeBlock -= 1;
+  }
+
+  printlist();
+
+  cout << "IndexOfNearestFreeBlock: " << indexOfNearestFreeBlock << endl;
+
+
+  //Now that you have a FreeBlock of the right size you need to remove it from the FreeList 
+  //and pass the pointer to the User. We add 16 to the pointer in order to account for overhead.
+  //FIXME: Remember you have to also subtract by this number in order to properly free the memory
+  BlockHeader* freeBlock = FreeList.at(indexOfNearestFreeBlock).head;
+
+  cout << "freeBlock Address: " << freeBlock << endl;
+
+  FreeList.at(indexOfNearestFreeBlock).remove(freeBlock);
+
+  printlist();
+
+  cout << "///////////////////////End of Alloc///////////////////////////" << endl;
+
+  return ( (void*)( (char*)freeBlock + 16 ) ) ;
+
+  return NULL;
 };
 
 void BuddyAllocator::free(void* a) {
