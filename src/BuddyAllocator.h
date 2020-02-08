@@ -10,8 +10,9 @@ typedef unsigned int uint;
 class BlockHeader{
 public:
 	// think about what else should be included as member variables
-	int block_size;  // size of the block
+	char in_use;  	 // describes whether or not the Block is in a freelist 0(in freelist) and 1(in use)
 	char buddy_Loc;  //Has potential value of 0(left buddy) or 1(right buddy), this helps with determining offset
+	int block_size;  //size of the block
 	BlockHeader* next = NULL; // pointer to the next block
 };
 

@@ -12,29 +12,33 @@ using namespace std;
 
 //LinkedList public functions
 void LinkedList::insert(BlockHeader* b){
-  cout << "Current Head is " << this->head << endl;
+  // cout << "Current Head is " << this->head << endl;
   if(this->head == NULL){
     this->head = b;
     b->next = NULL;
+    // cout << "New Head is: " << this->head << endl;
+    // cout << "Head next is: " << this->head->next << endl;
   } else {
     b->next = this->head;
     this->head = b;
+    // cout << "New Head is: " << this->head << endl;
+    // cout << "Head next is: " << this->head->next << endl;
   }
 };
 
 void LinkedList::remove(BlockHeader* b){
   BlockHeader* temp = this->head;
   if(b == NULL){
-    cout << "Removal not possible" << endl;
+    // cout << "Removal not possible" << endl;
   } else if(b == this->head){
     if(this->head->next == NULL){
       this->head = NULL;
       temp->next = NULL;
-      cout << "Removing the head, list is now empty." << endl;
+      // cout << "Removing the head, list is now empty." << endl;
     } else {
       this->head = this->head->next;
       temp->next = NULL;
-      cout << "Removing the head, new head designated for non-empty list." << endl;
+      // cout << "Removing the head, new head designated for non-empty list." << endl;
     }
   } else {
     BlockHeader* temp = this->head;
@@ -43,7 +47,7 @@ void LinkedList::remove(BlockHeader* b){
     }
     temp->next = b->next;
     b->next = NULL;
-    cout << "Removing an interior element for non-empty list." << endl;
+    // cout << "Removing an interior element for non-empty list." << endl;
   }
 };
 
@@ -56,7 +60,7 @@ void LinkedList::remove(BlockHeader* b){
 BuddyAllocator::BuddyAllocator (int _basic_block_size, int _total_memory_length){
   basic_block_size = _basic_block_size, total_memory_size = _total_memory_length;
 
-  cout << endl << endl << endl << "/////////////////////Start of Constructor////////////////////" << endl;
+  // cout << endl << endl << endl << "/////////////////////Start of Constructor////////////////////" << endl;
 
   //Setting up basic_block_size to be a power of 2
   if(log2(basic_block_size) > (int)log2(basic_block_size)){
@@ -84,7 +88,7 @@ BuddyAllocator::BuddyAllocator (int _basic_block_size, int _total_memory_length)
   start_loc = (char*)malloc(total_memory_size);
   BlockHeader startBlock;
   startBlock.block_size = total_memory_size;
-  startBlock.buddy_Loc = 0;
+  startBlock.buddy_Loc = '0';
   memcpy( start_loc, &startBlock, sizeof(startBlock) );
   BlockHeader * startBlock_ptr = (BlockHeader*)start_loc;
   // cout << "Size of Block Header " << sizeof(startBlock) << endl;
@@ -92,34 +96,50 @@ BuddyAllocator::BuddyAllocator (int _basic_block_size, int _total_memory_length)
 
   // cout << "Succesfully placed startBlock in FreeList -> total_memory_size: " << FreeList.at(FreeList.size()-1).head->block_size << endl;
 
-  cout << "/////////////////////End of Constructor////////////////////" << endl;
+  // cout << "/////////////////////End of Constructor////////////////////" << endl;
 };
 
 BuddyAllocator::~BuddyAllocator (){
-  cout << "Called Destructor" << endl;
-	free(start_loc);
+  // cout << "Called Destructor" << endl;
+	std::free(start_loc);
 }
 
 //BuddyAllocator private functions
 BlockHeader* BuddyAllocator::getbuddy(BlockHeader * addr){
 
-  //FIXME: NEED TO TEST GETBUDDY
+  // cout << endl << endl << endl << endl;
+  // cout << "//////////////////////////////Start of getbuddy//////////////////////////////////////////" << endl;
 
-  if(addr->buddy_Loc == 0){
-    BlockHeader * buddyAddr = (BlockHeader*)( ((char*)addr) + addr->block_size );
-    if(arebuddies(addr, buddyAddr)){
-      return buddyAddr;
-    } else {
-      return NULL;
-    }
-  } else {
-    BlockHeader * buddyAddr = (BlockHeader*)( ((char*)addr) - addr->block_size );
-    if(arebuddies(addr, buddyAddr)){
-      return buddyAddr;
-    } else {
-      return NULL;
-    }
-  }
+  //Checks to see if current Block is a right or left buddy, will then + or - the block size to the address in order to get 
+  //the buddy block's header address. Returns the buddy block's address only if the size corresponds;
+  // if(addr->buddy_Loc == '0'){
+  //   BlockHeader * buddyAddr = (BlockHeader*)( ((char*)addr) + addr->block_size );
+  //   if(arebuddies(addr, buddyAddr)){
+  //     cout << "////////End of getbuddy/////////" << endl;
+  //     return buddyAddr;
+  //   } else {
+  //     cout << "////////End of getbuddy/////////" << endl;
+  //     return NULL;
+  //   }
+  // } else {
+  //   BlockHeader * buddyAddr = (BlockHeader*)( ((char*)addr) - addr->block_size );
+  //   if(arebuddies(addr, buddyAddr)){
+  //     cout << "////////End of getbuddy/////////" << endl;
+  //     return buddyAddr;
+  //   } else {
+  //      cout << "////////End of getbuddy/////////" << endl;
+  //     return NULL;
+  //   }
+  // }
+
+
+
+  //Proper getbuddy algorithm FIXME: Look at this for possible cause of issues later on
+   BlockHeader* buddy = (BlockHeader*)( ( (char*)addr - start_loc ) ^ ((unsigned long)(addr->block_size + start_loc)) );
+  //  cout << "Original Block is: " << addr << endl;
+  //  cout << "Original Block Size is: " << addr->block_size << endl;
+  //  cout << "Buddy address is: " << buddy << endl;
+  return buddy;
 };
 
 bool BuddyAllocator::arebuddies(BlockHeader* block1, BlockHeader* block2){
@@ -128,43 +148,65 @@ bool BuddyAllocator::arebuddies(BlockHeader* block1, BlockHeader* block2){
       
 };
 
+//Performs the merger of two blocks. will return the starting pointer to the block header of the left most block after merge.
+//This function assumes that both block are indeed buddies, both are free, and that block1 is the left block
 BlockHeader* BuddyAllocator::merge(BlockHeader* block1, BlockHeader* block2){
 
-  return NULL;
+  // cout << endl << endl << endl << endl;
+  // cout << "///////////////Start of merge//////////////" << endl;
+
+  short indexToRemoveBlock = (short)(log2(block1->block_size) - basic_block_base2);
+
+  //Remove both blocks from their coresponding FreeList
+  FreeList.at(indexToRemoveBlock).remove(block1);
+  FreeList.at(indexToRemoveBlock).remove(block2);
+
+  //Adjust block1 header
+  block1->block_size = block1->block_size*2;
+
+  short indexToInsertBlock = (short)(log2(block1->block_size) - basic_block_base2);
+
+  //insert the merged block into the correct list
+  FreeList.at(indexToInsertBlock).insert(block1);
+
+  // cout << "/////////////////End of Merge//////////////////" << endl;
+
+  return block1;
 };
 
 BlockHeader* BuddyAllocator::split(BlockHeader* block){
 
-  cout << endl << endl << endl << endl;
-  cout << "///////////////////////Start of Split///////////////////////////" << endl;
-  BlockHeader * buddyBlock = (BlockHeader*)((char*)block + (block->block_size/2));
+  // cout << endl << endl << endl << endl;
+  // cout << "///////////////////////Start of Split///////////////////////////" << endl;
+  BlockHeader buddyBlock;
+  
 
-  //Should be doing this removal inside alloc
-  // FreeList.at(log2(block->block_size) - basic_block_base2).remove(block);
-
-  cout << "BuddyBlock Address should be: " << block << " + " << (block->block_size/2) <<endl;
-  cout << "BuddyBlock Address is: " << buddyBlock << endl; 
-
-  cout << "Original Block size is: " << block->block_size << endl;
+  //Placing new BlockHeader* in correct location
+  char* dest = (char*)block + block->block_size/2;
+  memcpy( dest,  block, sizeof(buddyBlock));
+  BlockHeader* buddyBlock_ptr = (BlockHeader*)dest;
 
   //Setting new block_size
   block->block_size = block->block_size/2;
-  buddyBlock->block_size = block->block_size;
+  buddyBlock_ptr->block_size = block->block_size;
 
-  cout << "New Block size is: " << block->block_size<< endl;
+  // cout << "New Block size is: " << block->block_size<< endl;
 
   //Setting new buddy_Loc
-  block->buddy_Loc = 0;
-  buddyBlock->buddy_Loc = 1;
+  block->buddy_Loc = '0';
+  buddyBlock_ptr->buddy_Loc = '1';
+
+  //Setting in_use for buddy block
+  buddyBlock_ptr->in_use = '0';
 
 
   // //Adding blocks to appropriate LinkedList in FreeList
   short indexToPlaceBlock = (short)(log2(block->block_size) - basic_block_base2);
   
+  FreeList.at(indexToPlaceBlock).insert(buddyBlock_ptr);
   FreeList.at(indexToPlaceBlock).insert(block);
-  FreeList.at(indexToPlaceBlock).insert(buddyBlock);
 
-  cout << "///////////////////////End of Split///////////////////////////" << endl;
+  // cout << "///////////////////////End of Split///////////////////////////" << endl;
 
   return NULL;
 };
@@ -175,7 +217,7 @@ void BuddyAllocator::setupFreeList(int levelsNeeded){
     FreeList.push_back(LinkedList());
   }
 
-  cout << "Current FreeList size " << FreeList.size() << endl;
+  // cout << "Current FreeList size " << FreeList.size() << endl;
 
 };
 
@@ -186,9 +228,7 @@ void* BuddyAllocator::alloc(int length) {
      Of course this needs to be replaced by your implementation.
   */
 
-  cout << "///////////////////////Start of Alloc///////////////////////////" << endl;
-
-  printlist();
+  // cout << "///////////////////////Start of Alloc///////////////////////////" << endl;
 
   //Checking function input
   if(length < 1){
@@ -196,6 +236,7 @@ void* BuddyAllocator::alloc(int length) {
     return NULL;
   } else if ( length > total_memory_size ){
     cout << "Not enough Memory Null Pointer returned instead" << endl;
+    return NULL;
   }
 
   int bytesRequested = length + sizeof(BlockHeader);
@@ -205,7 +246,7 @@ void* BuddyAllocator::alloc(int length) {
     indexOfBlockSizeRequested = 0;
   }
 
-  cout << "indexOfBlockSizeRequested: " << indexOfBlockSizeRequested << endl;
+  // cout << "indexOfBlockSizeRequested: " << indexOfBlockSizeRequested << endl;
 
   int indexOfNearestFreeBlock = indexOfBlockSizeRequested;
   
@@ -220,7 +261,7 @@ void* BuddyAllocator::alloc(int length) {
     }
   };
 
-  cout << "IndexOfNearestFreeBlock: " << indexOfNearestFreeBlock << endl;
+  // cout << "IndexOfNearestFreeBlock: " << indexOfNearestFreeBlock << endl;
 
   while( indexOfNearestFreeBlock != indexOfBlockSizeRequested ){
     BlockHeader* blockToSplit = FreeList.at(indexOfNearestFreeBlock).head;
@@ -232,9 +273,7 @@ void* BuddyAllocator::alloc(int length) {
     indexOfNearestFreeBlock -= 1;
   }
 
-  printlist();
-
-  cout << "IndexOfNearestFreeBlock: " << indexOfNearestFreeBlock << endl;
+  // cout << "IndexOfNearestFreeBlock: " << indexOfNearestFreeBlock << endl;
 
 
   //Now that you have a FreeBlock of the right size you need to remove it from the FreeList 
@@ -242,22 +281,65 @@ void* BuddyAllocator::alloc(int length) {
   //FIXME: Remember you have to also subtract by this number in order to properly free the memory
   BlockHeader* freeBlock = FreeList.at(indexOfNearestFreeBlock).head;
 
-  cout << "freeBlock Address: " << freeBlock << endl;
+  // cout << "freeBlock Address: " << freeBlock << endl;
 
   FreeList.at(indexOfNearestFreeBlock).remove(freeBlock);
 
-  printlist();
+  //Set in_use flag
+  freeBlock->in_use = '1';
 
-  cout << "///////////////////////End of Alloc///////////////////////////" << endl;
+  // cout << "///////////////////////End of Alloc///////////////////////////" << endl;
 
+  // BlockHeader* buddy =  getbuddy(freeBlock);
+
+  // merge(freeBlock, buddy);
+
+  // cout << "Here is the Block address: " << freeBlock << endl;
+  // cout << "Here is the Block-Size: " << freeBlock->block_size << endl;
+  // cout << "Here is the Block-Loc: " << freeBlock->buddy_Loc << endl;
+  // cout << "block in use? " << freeBlock->in_use << endl;
+  // cout << "Here is the Buddy address: " << buddy << endl;
+  // cout << "Here is the Buddy block_size: " << buddy->block_size << endl;
+  // cout << "Here is the Buddy block-loc: " << buddy->buddy_Loc << endl;
+  // cout << "block in use? " << buddy->in_use << endl;
   return ( (void*)( (char*)freeBlock + 16 ) ) ;
 
-  return NULL;
 };
 
 void BuddyAllocator::free(void* a) {
-  /* Same here! */
-  ::free (a);
+
+  // cout << "//////////////////////////Start of Free/////////////////////////" << endl;
+
+  //Reset block for insertion
+  BlockHeader* blockToFree = (BlockHeader*)( (char*)a - 16);
+  blockToFree->in_use = '0';
+
+  //insert back into FreeList
+  short indexToInsertBlock = (short)(log2( blockToFree->block_size) - basic_block_base2);
+
+  FreeList.at(indexToInsertBlock).insert(blockToFree);
+
+  for(short freeListIndex = 0; freeListIndex < max_level_index; freeListIndex++){
+
+    if(FreeList.at(freeListIndex).head != NULL && FreeList.at(freeListIndex).head->next){
+
+      BlockHeader* blockToCheck = FreeList.at(freeListIndex).head;
+      BlockHeader* blockToCheckBuddy = getbuddy(blockToCheck);
+
+      // cout << "blockToCheck: " << blockToCheck << endl;
+      // cout << "blockToCheckBuddy: " << blockToCheckBuddy << endl;
+
+
+      if(FreeList.at(freeListIndex).head->next == blockToCheckBuddy){
+        merge( blockToCheck, blockToCheckBuddy );
+      }
+    }
+  }
+
+  // cout << "Outside of for loop" << endl;
+
+  // cout << "/////////////////////////////End of Free////////////////////" << endl;
+
 };
 
 void BuddyAllocator::printlist (){

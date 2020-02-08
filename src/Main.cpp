@@ -65,22 +65,22 @@ int main(int argc, char ** argv) {
 
   // create memory manager
   BuddyAllocator * allocator = new BuddyAllocator(basic_block_size, memory_length);
-  void* testAlloc = allocator->alloc(256);
+  // void* testAlloc = allocator->alloc(256);
+  // allocator->free(testAlloc);
 
-  cout << "testAlloc address: " << testAlloc << endl;
-
-  delete(allocator);
 
   // the following won't print anything until you start using FreeList and replace the "new" with your own implementation
   // easytest (allocator);
 
   
   // stress-test the memory manager, do this only after you are done with small test cases
-  // Ackerman* am = new Ackerman ();
-  // am->test(allocator); // this is the full-fledged test. 
+  Ackerman* am = new Ackerman ();
+  am->test(allocator); // this is the full-fledged test. 
   
-  // destroy memory manager
-  // delete allocator;
+  // destroy memory manager and Ackerman
+  delete am;
+  delete allocator;
+
 }
 
 
